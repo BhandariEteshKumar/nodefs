@@ -1,11 +1,26 @@
-const { response, request } = require("express");
-const express = require("express");
-const res = require("express/lib/response");
+// const { response, request } = require("express");
+// const express = require("express");
+// const res = require("express/lib/response");
+
+import express from "express";
+import { MongoClient } from "mongodb";
+
 const app = express();
 
 app.get("/", function (req, res) {
   res.send("Hello World");
 });
+
+const MONGO_URL = "mongodb://localhost";
+
+async function createConnection() {
+  const client = new MongoClient(MONGO_URL);
+  await client.connect();
+  console.log("Mongo Connected");
+  return client;
+}
+
+const client = await createConnection();
 
 app.listen(9000, () => {
   console.log("Server started at PORT 9000");
@@ -93,23 +108,25 @@ const movies = [
 app.get("/movies", (request, response) => {
   const { language, rating } = request.query;
   console.log(language, rating);
-  let movie;
-  if (language === undefined && rating === undefined) movie = movies;
-  else if (language !== undefined && rating !== undefined)
-    movie = movies.filter(
-      (movie) => movie.language === language && movie.rating === +rating
-    );
-  else if (language !== undefined)
+  let movie = movies;
+  if (language) {
     movie = movies.filter((movie) => movie.language === language);
-  else movie = movies.filter((movie) => movie.rating === +rating);
+  }
+  if (rating) {
+    movie = movie.filter((movie) => movie.rating === +rating);
+  }
   console.log(movie, +rating);
   response.send(movie);
 });
 
-app.get("/movies/:id", (request, response) => {
+app.get("/movies/:id", async (request, response) => {
   const { id } = request.params;
-  for (let i = 0; i < movies.length; i++) {
-    if (id === movies[i].id) response.send(movies[i]);
-  }
-  // response.send(movie);
+  // for (let i = 0; i < movies.length; i++) {
+  //   if (id === movies[i].id) response.send(movies[i]);
+  // }
+  const movie = await client
+    .db("b29wd")
+    .collection("movies")
+    .findOne({ id: id });
+  response.send(movie);
 });

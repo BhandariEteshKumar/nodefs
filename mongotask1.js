@@ -824,3 +824,15 @@ db.collection.find({
 //     "product_price": 20
 //   }
 // ]
+
+// Delete the products which product price value are same
+db.collection.deleteMany({
+  $or: [
+    {
+      product_price: 36,
+    },
+    {
+      product_price: 47,
+    },
+  ],
+});
