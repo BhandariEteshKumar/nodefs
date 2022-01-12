@@ -23,7 +23,7 @@ async function createConnection() {
 
 const client = await createConnection();
 
-app.listen(9000, () => {
+app.listen(process.env.PORT, () => {
   console.log("Server started at PORT 9000");
 });
 
