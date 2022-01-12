@@ -12,7 +12,7 @@ app.get("/", function (req, res) {
   res.send("Hello World");
 });
 
-const MONGO_URL = "mongodb+srv://etesh:etesh123@cluster0.alhy2.mongodb.net";
+const MONGO_URL = process.env.MONGO_URL;
 
 async function createConnection() {
   const client = new MongoClient(MONGO_URL);
